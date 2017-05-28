@@ -41,6 +41,7 @@ Perseus can easily run inside a Docker container. Just build the image using the
 ```
 
 docker run yourrepository/yourimage -e "storageAccountName=xxxxxx" -e "storageAccountKey=xxxxxx" -e "azureSearchUrl=xxxxxx" -e "azureSearchKey=xxxxxx" -e "visionApiKey=xxxxxx" -e "location=westeurope"
+```
 
 A ready made Docker image is available at [yaron2/perseus].
 

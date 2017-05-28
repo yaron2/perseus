@@ -11,7 +11,7 @@ A custom index will also be created for the images metadata.
 To setup Perseus, run setup.js in setup_scripts using the following parameters:
 
 ```
-node ./setup_scripts/setup.js --appId={Azure Active Directory App ID} --secret="{Azure Active Directory App Secret} --tenantId={Azure AD Tenant ID}"--subscriptionId={Your Subscription ID} --resourceGroup={Name of ResourceGroup} --location={Location to setup in. Example: West Europe}
+node ./setup_scripts/setup.js --appId={Azure Active Directory App ID} --secret={Azure Active Directory App Secret} --tenantId={Azure AD Tenant ID --subscriptionId={Your Subscription ID} --resourceGroup={Name of ResourceGroup} --location={Location to setup in. Example: West Europe}
 ```
 
 After the setup finishes, you will receive the following outputs: Storage Account Name, Storage Account Key, Azure Search URL, Azure Search Key, Vision API Key.
@@ -20,13 +20,15 @@ After the setup finishes, you will receive the following outputs: Storage Accoun
 
 Perseus expects the following environment variables to be set -
 
-storageAccountName - Name of Storage Account
-storageAccountKey - Storage Account Key
-azureSearchUrl - URL of Azure Search instance
-azureSearchKey - Admin Key of Azure Search instance
-visionApiKey - Azure Cognitive Services Vision API key
-location - The deployment location. Example: westeurope
-PORT (optional) - The port to listen on. Defaults to 3030
+1) storageAccountName - Name of Storage Account
+2) storageAccountKey - Storage Account Key
+3) azureSearchUrl - URL of Azure Search instance
+4) azureSearchKey - Admin Key of Azure Search instance
+5) visionApiKey - Azure Cognitive Services Vision API key
+6) location - The deployment location. Example: westeurope
+7) PORT (optional) - The port to listen on. Defaults to 3030
+
+Start Perseus:
 
 ```
 node app.js

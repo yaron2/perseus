@@ -1,6 +1,6 @@
 # Perseus
 Perseus is an image search blackbox built using Azure Cognitive Services, Azure Search and Node.js.
-Using Perseus you can create a photo datalake by uploading assets and perform similarity search done against other photos, search through your repository using natural language.
+Using Perseus you can create a photo data lake by uploading assets and perform similarity search done against other photos, search through your repository using natural language.
 
 Perseus exposes a RESTful API and a Web UI dashboard.
 

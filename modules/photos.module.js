@@ -215,7 +215,7 @@ var Photos = function () {
                 for (let r in results) {
                     let item = results[r];
                     
-                    if (item['@search.score'] > 0.05) {
+                    if (item['@search.score'] > 0.02) {
                         items.push(item.url);
                     }
                 }

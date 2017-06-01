@@ -206,7 +206,7 @@ var Photos = function () {
             }
         }
 
-        searchClient.search("images", { search: finalBag.join(" ") }, function (err, results) {
+        searchClient.search("images", { search: finalBag.join(" | ") }, function (err, results) {
             if (err)
                 callback({ status: 'error', errorMessage: 'Search operation failed' });
             else {
@@ -214,6 +214,7 @@ var Photos = function () {
 
                 for (let r in results) {
                     let item = results[r];
+                    
                     if (item['@search.score'] > 0.05) {
                         items.push(item.url);
                     }

@@ -17,7 +17,7 @@ export class AppComponent {
   status: String = ""
   searchTerm = ""
 
-  apiAddress: String = "http://localhost:3030"
+  apiAddress: String = ""
 
   constructor(private http: Http) {
     this.getPhotos()

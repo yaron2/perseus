@@ -133,22 +133,28 @@ var Photos = function () {
             if (err)
                 callback({ status: 'error', errorMessage: 'Search operation failed' });
             else {
-                let items = [];
-
-                for (let r in results) {
-                    let item = results[r];
-                    items.push({
-                       score: item['@search.score'],
-                       tags: item.tags,
-                       categories: item.categories,
-                       captions: item.captions,
-                       url: item.url
-                    });
-                }
-
-                callback({ status: 'ok', items: items });
+                let response = buildResponse(results);
+                callback({ status: 'ok', items: response });
             }
         });
+    }
+
+    function buildResponse(results, minimumScore = 0) {
+        let items = [];
+
+        for (let r in results) {
+            let item = results[r];
+            if (item['@search.score'] > minimumScore)
+                items.push({
+                    score: item['@search.score'],
+                    tags: item.tags,
+                    categories: item.categories,
+                    captions: item.captions,
+                    url: item.url
+                });
+        }
+
+        return items;
     }
 
     function search(photo, callback) {
@@ -164,17 +170,8 @@ var Photos = function () {
                         if (err)
                             callback({ status: 'error', errorMessage: 'Search operation failed' });
                         else {
-                            let items = [];
-
-                            for (let r in results) {
-                                let item = results[r];
-                                if (item['@search.score'] > 0.05) {
-                                    items.push(item.url);
-                                }
-                            }
-
-
-                            callback({ status: 'ok', items: items });
+                            let response = buildResponse(results, 0.05);
+                            callback({ status: 'ok', items: response });
                         }
                     });
                 });
@@ -187,22 +184,13 @@ var Photos = function () {
             callback({ status: 'error', errorMessage: 'query cannot be empty' });
             return;
         }
-
+        
         searchClient.search("images", { search: query }, function (err, results) {
             if (err)
                 callback({ status: 'error', errorMessage: 'Search operation failed' });
             else {
-                let items = [];
-
-                for (let r in results) {
-                    let item = results[r];
-
-                    if (item['@search.score'] > 0.05) {
-                        items.push(item.url);
-                    }
-                }
-
-                callback({ status: 'ok', items: items });
+                let response = buildResponse(results, 0.05);
+                callback({ status: 'ok', items: response });
             }
         });
     }

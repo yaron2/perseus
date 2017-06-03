@@ -129,26 +129,25 @@ var Photos = function () {
     }
 
     function get(callback) {
-        let blobService = Storage.createBlobService(storageAccountName, storageAccountKey);
-        blobService.createContainerIfNotExists("photos", { publicAccessLevel: 'blob' }, function (err, result) {
-            blobService.listBlobsSegmented('photos', null, function (error, result, response) {
-                let returnObj = { status: "" };
+        searchClient.search("images", { search: "*", top: 1000 }, function (err, results) {
+            if (err)
+                callback({ status: 'error', errorMessage: 'Search operation failed' });
+            else {
+                let items = [];
 
-                if (!error) {
-                    returnObj.images = [];
-                    result.entries.forEach((entry) => {
-                        returnObj.images.push(getImageUrl(entry.name));
+                for (let r in results) {
+                    let item = results[r];
+                    items.push({
+                       score: item['@search.score'],
+                       tags: item.tags,
+                       categories: item.categories,
+                       captions: item.captions,
+                       url: item.url
                     });
-
-                    returnObj.status = "ok";
-                }
-                else {
-                    returnObj.errorMessage = "Failed getting photos";
-                    returnObj.status = "error";
                 }
 
-                callback(returnObj);
-            });
+                callback({ status: 'ok', items: items });
+            }
         });
     }
 
@@ -188,7 +187,7 @@ var Photos = function () {
             callback({ status: 'error', errorMessage: 'query cannot be empty' });
             return;
         }
-        
+
         searchClient.search("images", { search: query }, function (err, results) {
             if (err)
                 callback({ status: 'error', errorMessage: 'Search operation failed' });
@@ -197,7 +196,7 @@ var Photos = function () {
 
                 for (let r in results) {
                     let item = results[r];
-                    
+
                     if (item['@search.score'] > 0.05) {
                         items.push(item.url);
                     }

@@ -188,25 +188,8 @@ var Photos = function () {
             callback({ status: 'error', errorMessage: 'query cannot be empty' });
             return;
         }
-
-        let allowed = ["NN", "NNP", "NNPS", "NNS", "VBG"];
-        let finalBag = [];
-
-        let words = new pos.Lexer().lex(query);
-        let tagger = new pos.Tagger();
-        let taggedWords = tagger.tag(words);
-
-        for (let i in taggedWords) {
-            let taggedWord = taggedWords[i];
-            let word = taggedWord[0];
-            let tag = taggedWord[1];
-
-            if (allowed.indexOf(tag) > -1) {
-                finalBag.push(word);
-            }
-        }
-
-        searchClient.search("images", { search: finalBag.join(" | ") }, function (err, results) {
+        
+        searchClient.search("images", { search: query }, function (err, results) {
             if (err)
                 callback({ status: 'error', errorMessage: 'Search operation failed' });
             else {
@@ -215,7 +198,7 @@ var Photos = function () {
                 for (let r in results) {
                     let item = results[r];
                     
-                    if (item['@search.score'] > 0.02) {
+                    if (item['@search.score'] > 0.05) {
                         items.push(item.url);
                     }
                 }

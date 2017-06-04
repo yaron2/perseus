@@ -6,7 +6,7 @@
       </svg>
     </div>
   </div>
-
+  
   <header class="header">
     <div class="navigation-trigger hidden-xl-up" data-ma-action="aside-open" data-ma-target=".sidebar">
       <div class="navigation-trigger__inner">
@@ -60,8 +60,8 @@
         <button (click)="uploadPhotos()" class="btn btn-primary btn-lg btn--icon-text waves-effect"><i class="zmdi zmdi-plus"></i> Add Photos</button>
         <button (click)="searchPhoto()" class="btn btn-info btn-lg btn--icon-text waves-effect"><i class="zmdi zmdi-search"></i> Find Related</button>
         <button (click)="getPhotos()" class="btn btn-info btn-lg waves-effect"> Show All</button>
-        <input style="display: none" multiple #fileUpload type="file" (change)="uploadChange($event)" accept=".jpg,.jpeg,.bmp,.png">
-        <input style="display: none" #searchUpload type="file" (change)="searchChange($event)" accept=".jpg,.jpeg,.bmp,.png">
+        <input style="display: none" multiple #fileUpload type="file" (change)="uploadChange($event)" accept=".jpg,.jpeg,.bmp,.png,.tif,.tiff">
+        <input style="display: none" #searchUpload type="file" (change)="searchChange($event)" accept=".jpg,.jpeg,.bmp,.png,.tif,.tiff">
         <br>
         <br>
         <h3>{{images.length}} Photos in repository</h3>

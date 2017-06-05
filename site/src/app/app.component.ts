@@ -36,12 +36,12 @@ export class AppComponent {
     const url = this.apiAddress + "/photos"
 
     this.http.delete(url).toPromise().then(response => {
-        if (response.json().status == "ok") {
-          this.getPhotos()
-          this.status = ""
-        }
-        else
-          this.status = "Failed deleting photos"
+      if (response.json().status == "ok") {
+        this.getPhotos()
+        this.status = ""
+      }
+      else
+        this.status = "Failed deleting photos"
     })
   }
 
@@ -57,7 +57,7 @@ export class AppComponent {
     event.stopPropagation()
     image.showOrHideMetadata()
   }
-  
+
   uploadChange(event: any) {
     let fileList: FileList = event.target.files
     if (fileList.length > 0) {
@@ -71,7 +71,10 @@ export class AppComponent {
 
       this.http.post(this.apiAddress + "/photos/upload", formData).toPromise().then(response => {
         this.status = ""
-        this.getPhotos()
+        
+        setTimeout(() => {
+          this.getPhotos()
+        }, 2500);
       }).catch(error => {
         this.status = "Failed to upload files"
       });

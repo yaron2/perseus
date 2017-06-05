@@ -60,6 +60,12 @@ app.get('/photos', function(req, res) {
     });
 });
 
+app.delete('/photos', function(req, res) {
+    Photos.deleteAll((response) => {
+        res.json(response);
+    });
+});
+
 app.get('/', function(req, res) {
     res.sendFile('/site/dist/index.html', { root: __dirname });
 });

@@ -31,6 +31,20 @@ export class AppComponent {
     this.searchUpload.nativeElement.click()
   }
 
+  public deleteAll() {
+    this.status = "Deleting images..."
+    const url = this.apiAddress + "/photos"
+
+    this.http.delete(url).toPromise().then(response => {
+        if (response.json().status == "ok") {
+          this.getPhotos()
+          this.status = ""
+        }
+        else
+          this.status = "Failed deleting photos"
+    })
+  }
+
   public searchText() {
     if (this.searchTerm) {
       this.http.get(this.apiAddress + "/photos/searchText?query=" + this.searchTerm).toPromise().then(response => {
@@ -43,7 +57,7 @@ export class AppComponent {
     event.stopPropagation()
     image.showOrHideMetadata()
   }
-
+  
   uploadChange(event: any) {
     let fileList: FileList = event.target.files
     if (fileList.length > 0) {

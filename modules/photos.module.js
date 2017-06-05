@@ -2,17 +2,21 @@ var Photos = function () {
     var Storage = require('azure-storage');
     var AzureSearch = require('azure-search');
     var streamifier = require('streamifier');
+    var sharp = require('sharp');
     var Client = require('node-rest-client').Client;
     var client = new Client();
     var async = require('async');
     var shortid = require('shortid');
     var pos = require('pos');
+    var resourceProvisioner = require('../setup_scripts/resourceProvisioner');
 
-    var storageAccountName, storageAccountKey, searchClient, computerVision, visionKey, visionApiUrl;
+    var storageAccountName, storageAccountKey, searchClient, computerVision, visionKey, visionApiUrl, azureSearchUrl, azureSearchKey;
 
     function init(searchUrl, searchAdminKey, saName, saKey, visionApiKey, location) {
         storageAccountName = saName;
         storageAccountKey = saKey;
+        azureSearchUrl = searchUrl;
+        azureSearchKey = searchAdminKey;
 
         searchClient = AzureSearch({
             url: searchUrl,
@@ -31,14 +35,16 @@ var Photos = function () {
             let tasks = [];
             photos.forEach((photo) => {
                 tasks.push(function (handler) {
-                    let stream = streamifier.createReadStream(photo.buffer);
-                    blobService.createBlockBlobFromStream("photos", photo.originalname, stream, photo.size, { contentSettings: { contentType: photo.mimetype } }, function (error, result, response) {
-                        images.push(getImageUrl(result.name));
-                        handler();
+                    convertToPngIfNeeded(photo, response => {
+                        let stream = streamifier.createReadStream(response.buffer);
+                        blobService.createBlockBlobFromStream("photos", response.photoName, stream, photo.size, { contentSettings: { contentType: response.mimetype } }, function (error, result, response) {
+                            images.push(getImageUrl(result.name));
+                            handler();
+                        });
                     });
                 });
             });
-
+            
             async.parallel(tasks, () => {
                 extractMetadataFromPhotos(images, (metadata) => {
                     writeMetadataToSearch(metadata, (metadataResponse) => {
@@ -47,6 +53,24 @@ var Photos = function () {
                 });
             });
         });
+    }
+
+    function convertToPngIfNeeded(photo, callback) {
+        let response = { photoName: photo.originalname, buffer: photo.buffer, mimetype: photo.mimetype } ;
+
+        if (photo.mimetype.indexOf("tif") > -1) {
+            sharp(photo.buffer).toFormat(sharp.format.png).toBuffer(function (err, data, info) {
+                if (!err) {
+                    response.buffer = data;
+                    response.photoName = photo.originalname.toLowerCase().replace("tif", "png");
+                    response.mimetype = "image/png";
+                }
+
+                callback(response);
+            });
+        }
+        else
+            callback(response);
     }
 
     function writeMetadataToSearch(metadata, callback) {
@@ -128,6 +152,21 @@ var Photos = function () {
         return "https://" + storageAccountName + ".blob.core.windows.net/" + containerName + "/" + imageName;
     }
 
+    function deleteAll(callback) {
+        searchClient.deleteIndex("images", (err, response) => {
+            if (err)
+                callback({ status: 'error', errorMessage: 'Failed deleting images' });
+            else {
+                resourceProvisioner.createSearchIndex(azureSearchUrl, azureSearchKey, (response) => {
+                    if (!response)
+                        callback({ status: 'error', errorMessage: 'Failed deleting images' });
+                    else
+                        callback({ status: 'ok' });
+                });
+            }
+        });
+    }
+
     function get(callback) {
         searchClient.search("images", { search: "*", top: 1000 }, function (err, results) {
             if (err)
@@ -150,7 +189,8 @@ var Photos = function () {
                     tags: item.tags,
                     categories: item.categories,
                     captions: item.captions,
-                    url: item.url
+                    url: item.url,
+                    id: item.id
                 });
         }
 
@@ -184,7 +224,7 @@ var Photos = function () {
             callback({ status: 'error', errorMessage: 'query cannot be empty' });
             return;
         }
-        
+
         searchClient.search("images", { search: query }, function (err, results) {
             if (err)
                 callback({ status: 'error', errorMessage: 'Search operation failed' });
@@ -200,7 +240,8 @@ var Photos = function () {
         init: init,
         upload: upload,
         get: get,
-        search: search
+        search: search,
+        deleteAll: deleteAll
     }
 }();
 

@@ -44,7 +44,7 @@ var Photos = function () {
                     });
                 });
             });
-            
+
             async.parallel(tasks, () => {
                 extractMetadataFromPhotos(images, (metadata) => {
                     writeMetadataToSearch(metadata, (metadataResponse) => {
@@ -56,7 +56,7 @@ var Photos = function () {
     }
 
     function convertToPngIfNeeded(photo, callback) {
-        let response = { photoName: photo.originalname, buffer: photo.buffer, mimetype: photo.mimetype } ;
+        let response = { photoName: photo.originalname, buffer: photo.buffer, mimetype: photo.mimetype };
 
         if (photo.mimetype.indexOf("tif") > -1) {
             sharp(photo.buffer).toFormat(sharp.format.png).toBuffer(function (err, data, info) {
@@ -91,7 +91,7 @@ var Photos = function () {
         photos.forEach((photoUrl) => {
             tasks.push(function (handler) {
                 extractMetadataFromPhoto(photoUrl, (response) => {
-                    if (response.status == "ok") {
+                    if (response.status == "ok" && (response.features.categories.length > 0 || response.features.captions.length > 0 || response.features.tags.length > 0)) {
                         results.push({
                             id: shortid.generate(),
                             url: photoUrl,
@@ -127,17 +127,25 @@ var Photos = function () {
         }
 
         client.post(visionApiUrl, args, function (data, respone) {
-            data.categories.forEach((category) => {
-                features.categories.push(category.name);
-            });
+            if (data) {
+                if (data.categories) {
+                    data.categories.forEach((category) => {
+                        features.categories.push(category.name);
+                    });
+                }
 
-            data.tags.forEach((tag) => {
-                features.tags.push(tag.name);
-            });
+                if (data.tags) {
+                    data.tags.forEach((tag) => {
+                        features.tags.push(tag.name);
+                    });
+                }
 
-            data.description.captions.forEach((caption) => {
-                features.captions.push(caption.text);
-            });
+                if (data.description) {
+                    data.description.captions.forEach((caption) => {
+                        features.captions.push(caption.text);
+                    });
+                }
+            }
 
             callback({ status: 'ok', features: features });
         });

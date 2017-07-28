@@ -70,8 +70,8 @@ export class AppComponent {
       this.status = "Uploading files for analysis..."
 
       this.http.post(this.apiAddress + "/photos/upload", formData).toPromise().then(response => {
-        this.status = ""
-        
+        this.status = "Upload successful"
+
         setTimeout(() => {
           this.getPhotos()
         }, 2500);
@@ -80,14 +80,14 @@ export class AppComponent {
       });
     }
   }
-
+  
   searchChange(event: any) {
     let fileList: FileList = event.target.files
     if (fileList.length > 0) {
       let formData: FormData = new FormData()
       formData.append("photo", fileList[0], fileList[0].name)
 
-      this.status = "Findind similar photos..."
+      this.status = "Finding similar photos..."
 
       this.http.post(this.apiAddress + "/photos/search", formData).toPromise().then(response => {
         this.status = ""
@@ -124,8 +124,6 @@ class SearchResult {
   constructor(public url: String, public score: Number, public tags: String[], public captions: String[], public categories: String[], public showingMetadata: Boolean) { }
 
   public showMetadataText = "Show Metadata"
-
-  public metadata = "Captions: " + this.captions + " " + "Categories: " + this.categories + " " + "Tags: " + this.tags
 
   public showOrHideMetadata() {
     this.showingMetadata = !this.showingMetadata

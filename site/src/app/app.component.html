@@ -69,17 +69,32 @@
         <h2 [hidden]="!status">{{status}}</h2>
         <br>
         <br>
-        <div class="row lightbox photos">
+        <div class="row photos">
           <a *ngFor="let image of images" (click)="openPhoto(image.url)" class="col-md-2 col-4 text-center">
-            <div class="lightbox__item photos__item">
-              <img height="150" [src]="image.url" alt="" />
+            <div class="photos__item hvr-grow">
+              <img style="cursor: zoom-in" height="150" [src]="image.url" alt="" />
             </div>
             <br>
             <br>
             <button (click)="showMetadata(image, $event)" class="btn btn-info waves-effect"> {{image.showMetadataText}}</button>
             <br>
             <div [hidden]="!image.showingMetadata">
-              <div name="metadata">{{image.metadata}}</div>
+              <div>
+              <span><strong>Score: </strong></span>
+              <span>{{image.score}}</span>
+            </div>
+            <div>
+              <span><strong>Captions: </strong></span>
+              <span>{{image.captions}}</span>
+            </div>
+              <div>
+              <span><strong>Categories: </strong></span>
+              <span>{{image.categories}}</span>
+            </div>
+            <div>
+              <span><strong>Tags: </strong></span>
+              <span>{{image.tags}}</span>
+            </div>
             </div>
           </a>
         </div>

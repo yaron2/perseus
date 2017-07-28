@@ -34,7 +34,7 @@ else if (!process.env.visionApiKey) {
     return;
 }
 
-Photos. init(process.env.azureSearchUrl, process.env.azureSearchKey, process.env.storageAccountName, process.env.storageAccountKey, process.env.visionApiKey, process.env.location);
+Photos.init(process.env.azureSearchUrl, process.env.azureSearchKey, process.env.storageAccountName, process.env.storageAccountKey, process.env.visionApiKey, process.env.location);
 
 app.post('/photos/upload', upload.array('photos'), function (req, res, next) {
     Photos.upload(req.files, (response) => {
